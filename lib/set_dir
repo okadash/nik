@@ -1,0 +1,8 @@
+#!/bin/sh
+
+##Directory setter
+set_dir(){
+  TMP="${DOC_DIR:?invalid DOC_DIR}/$1"
+  test ! -d $TMP && mkdir -pv $TMP
+  DOC_DIR=$TMP
+}

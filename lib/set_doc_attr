@@ -1,0 +1,5 @@
+#!/bin/sh
+
+set_doc_attr(){
+test ! -z "$1" && ATTR="$1";
+}

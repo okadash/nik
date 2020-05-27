@@ -1,0 +1,115 @@
+#!/bin/sh
+# nik
+# Description: create or edit today's memorandom markdown
+# Maintainer: Okadarien Saru <okadas@dev.sysnk.net>
+# Usage: nik [-t type] [-s day] [DOC_ATTRRIBUTE]
+###      nik [-vhl]
+# (syntax) DOC_ATTRIBUTE: document attribute to edit
+# Dependency: grep sed sort @shelib
+
+nik(){
+
+loadmod(){ require @nik; }
+loadenv(){
+  EDITOR_OPT=
+  if echo $EDITOR | grep -E vim\?\$ > /dev/null ; then EDITOR_OPT="-O"; fi
+  KANBAN_VIMRC_PATH=$HOME/.kanban_vimrc
+  ##default document root directory
+  DOC_BASE=$HOME/Documents
+  ##default document directory
+  DOC_DIR=$DOC_BASE
+  ##default date
+  FORDATE="`date +%m%d`"
+  FORMONTH="`date +%m`"
+  ##default attribute
+  ATTR=todo
+  ##Edit targets
+  TARGETS=
+  ##Defualt file type
+  TYPE=".md"
+}
+
+
+#SHELIB_OPTIONS
+parseopts(){
+  case $1 in
+    -t|--type) #filetype
+    ##set filetype for the todo file (default: .md)
+    chk -e "$2" -m "-t option needs just one argument"
+    TYPE=".$2"; shiftstack 2 $@ ;;
+
+    -r|--read) #[day] ##MISC
+    ##create new todo file from exist todo
+    shift; create_copy $@;
+    setexec nik_edit ;;
+
+    -s|--sln)
+    ##generate symbolic link for the new todo file
+    shift; create_sln $@
+    setexec nik_edit ;;
+
+    -F|--fix-sln) ##MISC
+    ##fix broken symbolic link with $BASE_DIR
+    setexec "fix_sln_basedir $2"; shiftstack 2 $@;;
+
+    -d|--date) #day|+N|-N
+    ##create or edit todo file with specified date
+    set_date $2; shiftstack 2 $@ ;;
+
+    -l*|--list) ##BREAK_OPT
+    ##list todo files for default location
+    setexec "nik_pretty_list $@" ;;
+
+    -e|--editor) #editor ##MISC
+    ##temporary change default editor to specified one
+    test -z $2 && throw argumentNotSpecified;
+    EDITOR=$2; shiftstack 2 $@ ;;
+
+    -D|--directory) #dir
+    ##specify document directory below ~/Documents
+    set_dir $2; shiftstack 2 $@ ;;
+
+    -k|--kanban)
+    ##kanban mode
+    shift;
+    kanban_edit $@
+    setexec commit_doc $@;;
+
+    -B|--biz) ##MISC
+    ##create/modify bussiness articles in ~/Documents/Biz/
+    set_dir Biz; shiftstack 1 $@ ;;
+
+    -Q|--qi|--qiita) ##MISC
+    ##create/modify qiita articles in ~/Documents/Qiita
+    set_dir Qiita; shiftstack 1 $@ ;;
+
+    -n) ##MISC
+    ##make document in the current directory
+    DOC_DIR=$PWD; shiftstack 1 $@ ;;
+
+    -x|--extreme) #[day]
+    ##extreme mode: open all document for specific date
+    test ! -z $2 && FORDATE="$2" && shift;
+    TARGETS="`nik_list --all | xargs -n1 |grep $FORDATE`";
+    setexec "nik_edit ${TARGETS}";;
+
+    -h|--help) #[--short] ##BREAK_OPT
+    ##show this help
+    setexec "showhelp ${2:---short}" ;;
+
+    -v|--version) ##BREAK_OPT
+    ##show version
+    setexec show_version;;
+
+    *)
+    set_doc_attr $1
+    setexec "nik_edit ${TARGETS}"
+    ;;
+  esac
+
+}
+#SHELIB_OPTIONS
+
+}
+
+cook nik $@
