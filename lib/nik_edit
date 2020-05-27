@@ -13,5 +13,6 @@ nik_edit(){
       NIK_EXEC_CMD="$EDITOR $EDITOR_OPT $@";
       $NIK_EXEC_CMD;
     }
+    commit_doc
 
 }
