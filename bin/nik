@@ -1,9 +1,7 @@
 #!/bin/sh
 # nik
-# Description: create or edit today's memorandom markdown
-# Maintainer: Okadarien Saru <okadas@dev.sysnk.net>
-# Usage: nik [-t type] [-s day] [DOC_ATTRRIBUTE]
-###      nik [-vhl]
+# Description: create or edit your memorandom markdown
+# usage: nik [-t type] [-x] [-d day] [DOC_ATTRRIBUTE]
 # (syntax) DOC_ATTRIBUTE: document attribute to edit
 # Dependency: grep sed sort @shelib
 
@@ -14,6 +12,7 @@ loadenv(){
   EDITOR_OPT=
   if echo $EDITOR | grep -E vim\?\$ > /dev/null ; then EDITOR_OPT="-O"; fi
   KANBAN_VIMRC_PATH=$HOME/.kanban_vimrc
+  [ ! -f "$KANBAN_VIMRC_PATH" ] && touch "$KANBAN_VIMRC_PATH" 
   ##default document root directory
   DOC_BASE=$HOME/Documents
   ##default document directory
@@ -87,8 +86,8 @@ parseopts(){
     ##make document in the current directory
     DOC_DIR=$PWD; shiftstack 1 $@ ;;
 
-    -x|--extreme) #[day]
-    ##extreme mode: open all document for specific date
+    -x|--extreme) #[day|subject]
+    ##extreme mode: open all document for specific date or subject
     test ! -z $2 && FORDATE="$2" && shift;
     TARGETS="`nik_list --all | xargs -n1 |grep $FORDATE`";
     setexec "nik_edit ${TARGETS}";;
