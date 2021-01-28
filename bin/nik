@@ -22,7 +22,7 @@ loadenv(){
   FORDATE="`date +%m%d`"
   FORMONTH="`date +%m`"
   ##default attribute
-  ATTR=todo
+  ATTR=memo
   ##Edit targets
   TARGETS=
   ##Defualt file type
