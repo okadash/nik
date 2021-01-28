@@ -2,5 +2,8 @@
 ##commit doc_dir as git repo
 commit_doc(){
   timestamp=`date +%Y/%m/%d_%H:%M`; : ${timestamp:=no comment};
-  sh -c "cd $DOC_DIR; git add *; git commit -m \"${*:-$timestamp}\";"
+  cd "$DOC_DIR" || throw commit_doc: cannot cd to $DOC_DIR
+  git status > /dev/null 2> /dev/null || git init
+  git add *; 
+  git commit -m "${@:-$timestamp}";
 }

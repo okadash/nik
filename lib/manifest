@@ -2,8 +2,8 @@
 # nik
 
 SHELIB_MODULE_NAME=nik
-SHELIB_MODULE_VERSION=0.3.4
+SHELIB_MODULE_VERSION=0.3.5
 SHELIB_MODULE_DESC="memopad for vimmers"
-MODULE_AUTHER_NAME="Okadarien Saru"
-MODULE_AUTHER_EMAIL="okadas@dev.sysnk.net"
-MODULE_REPO_BASE="https://github.com/okadash/nik"
+SHELIB_MODULE_AUTHER_NAME="Okadarien Saru"
+SHEILB_MODULE_AUTHER_EMAIL="okadas@tanban.org"
+SHELIB_MODULE_REPO_BASE="https://github.com/okadash/nik"

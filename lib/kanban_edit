@@ -1,8 +1,11 @@
 #!/bin/sh
-kanban_edit(){
-    set_dir Kanban;
+kanban_edit(){ #<proj_name>
+    set_dir "${1:?kanban_edit: specify project name with -k prjname!}";
     test "$1" = "-c" && { shift; commit_doc $@; exit; }
-    TARGETS=`echo ${FORDATE:?FORDATE not defined}{todo,doing,done}.md`;
-    for i in todo doing done; do create_sln $i; done
-    nik_edit ${EDITOR_OPT:+$EDITOR_OPT -S $KANBAN_VIMRC_PATH} ${TARGETS:-$@}; 
+    TARGET_DATE=$(echo ${FORDATE:?FORDATE not defined});
+    for i in todo doing done; do 
+      TARGETS="$TARGETS ${TARGET_DATE}${i}.md"
+      create_sln $i; 
+    done
+    nik_edit "${EDITOR_OPT:+$EDITOR_OPT -S $KANBAN_VIMRC_PATH}" "${TARGETS:-$@}"; 
 }

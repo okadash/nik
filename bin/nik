@@ -17,6 +17,7 @@ loadenv(){
   DOC_BASE=$HOME/Documents
   ##default document directory
   DOC_DIR=$DOC_BASE
+  KANBAN_DIR=$HOME/Kanban
   ##default date
   FORDATE="`date +%m%d`"
   FORMONTH="`date +%m`"
@@ -71,8 +72,8 @@ parseopts(){
     -k|--kanban)
     ##kanban mode
     shift;
-    kanban_edit $@
-    setexec commit_doc $@;;
+    DOC_DIR=${KANBAN_DIR:?KANBAN_DIR not set!}
+    setexec kanban_edit $@ ;;
 
     -B|--biz) ##MISC
     ##create/modify bussiness articles in ~/Documents/Biz/
