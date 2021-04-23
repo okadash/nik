@@ -62,15 +62,15 @@ parseopts(){
     ##kanban mode
     shift; setexec kanban_edit "$@";;
 
-    -B|--biz) ##MISC
+    -B|--biz)    ##MISC
     ##[shortcut] create/modify articles in ~/Documents/Biz/
     set_dir Biz; shiftstack 1 "$@" ;;
 
-    -Q|--qi|--qiita) ##MISC
+    -Q|--qi|--qiita)    ##MISC
     ##[shortcut] create/modify articles in ~/Documents/Qiita
     set_dir Qiita; shiftstack 1 "$@" ;;
 
-    -n) ##MISC
+    -n)    ##MISC
     ##make document in the current directory
     DOC_DIR=$PWD; shiftstack 1 "$@" ;;
 
