@@ -2,7 +2,9 @@
 
 ##generate symbolic link
 create_sln(){
-set_doc_attr $1
-test ! -z "$1" && ATTR="$1";
-set_newest_doc && ln -s "$DOC_NEWEST" "$DOC_DIR/${FORDATE}${ATTR}${TYPE}" 2> /dev/null
+  set_doc_name "$1"
+  set_doc_newest \
+    && ln -sv \
+      "${DOC_NEWEST}" \
+      $(get_doc)
 }

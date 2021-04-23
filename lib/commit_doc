@@ -1,6 +1,13 @@
 #!/bin/sh
 ##commit doc_dir as git repo
 commit_doc(){
-  timestamp=`date +%Y/%m/%d_%H:%M`; : ${timestamp:=no comment};
-  sh -c "cd $DOC_DIR; git add *; git commit -m \"${*:-$timestamp}\";"
+
+  timestamp=$(date +%Y/%m/%d_%H:%M);
+  : ${timestamp:=no comment};
+
+  sh -exc "
+    cd $DOC_DIR
+    git add *
+    git commit -m \"${*:-$timestamp}\"
+  "
 }

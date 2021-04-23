@@ -1,0 +1,12 @@
+#!/bin/sh
+set_doc_newest(){
+  DOC_NEWEST="$DOC_DIR/$(nik_newest)"
+  [ -f "$DOC_NEWEST" ]
+}
+nik_newest(){
+  nik_list --no-arrange \
+    | grep -E "[[:digit:]]{4}[[:alpha:]]" \
+    | sort -n \
+    | grep "$ATTR" \
+    | tail -1
+}

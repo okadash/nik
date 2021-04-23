@@ -5,10 +5,10 @@ nik_edit(){
   test $# -eq 0 \
     && {
       ## if no args, edit documents in DOC_DIR
-      NIK_EXEC_CMD="$EDITOR $EDITOR_OPT $DOC_DIR/${FORDATE}${ATTR}${TYPE}";
+      NIK_EXEC_CMD="$EDITOR $EDITOR_OPT $(get_doc)";
       $NIK_EXEC_CMD; } \
     || {
-      ## with args (e.g. -x, extreme mode), it opens all of document at the specified day
+      ## with args (e.g. -x, extreme mode), it opens all of document at the specified condition
       cd $DOC_DIR;
       NIK_EXEC_CMD="$EDITOR $EDITOR_OPT $@";
       $NIK_EXEC_CMD;

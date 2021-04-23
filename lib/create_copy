@@ -1,6 +1,9 @@
 #!/bin/sh
 
 create_copy(){
-set_doc_attr $1
-set_newest_doc && cp -v "$DOC_NEWEST" "$DOC_DIR/${FORDATE}${ATTR}${TYPE}" 2> /dev/null
+  set_doc "$1"
+  set_newest_doc \
+    && cp -v \
+      "$(get_doc_newest)" \
+      "$(get_doc)"
 }

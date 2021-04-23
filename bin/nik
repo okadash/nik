@@ -1,30 +1,29 @@
 #!/bin/sh
-# nik
-# Description: create or edit today's memorandom markdown
-# Maintainer: Okadarien Saru <okadas@dev.sysnk.net>
-# Usage: nik [-t type] [-s day] [DOC_ATTRRIBUTE]
-###      nik [-vhl]
-# (syntax) DOC_ATTRIBUTE: document attribute to edit
-# Dependency: grep sed sort @shelib
+# nik: the daily memorandom wrapper script
 
 nik(){
 
 loadmod(){ require @nik; }
 loadenv(){
   EDITOR_OPT=
-  if echo $EDITOR | grep -E vim\?\$ > /dev/null ; then EDITOR_OPT="-O"; fi
+  [ "$EDITOR" != "${EDITOR%/vim}" ] && EDITOR_OPT="-O"
   KANBAN_VIMRC_PATH=$HOME/.kanban_vimrc
+
   ##default document root directory
-  DOC_BASE=$HOME/Documents
+  DOC_BASE="${DOC_BASE:-$HOME/Documents}"
   ##default document directory
-  DOC_DIR=$DOC_BASE
-  ##default date
-  FORDATE="`date +%m%d`"
-  FORMONTH="`date +%m`"
+  DOC_DIR="$DOC_BASE"
+
+  ##default date = now
+  FORDATE="$(date +%m%d)"
+  FORMONTH="$(date +%m)"
+
   ##default attribute
-  ATTR=todo
-  ##Edit targets
+  ATTR=memo
+
+  ##Edit targets initialization
   TARGETS=
+
   ##Defualt file type
   TYPE=".md"
 }
@@ -34,64 +33,58 @@ loadenv(){
 parseopts(){
   case $1 in
     -t|--type) #filetype
-    ##set filetype for the todo file (default: .md)
-    chk -e "$2" -m "-t option needs just one argument"
-    TYPE=".$2"; shiftstack 2 $@ ;;
-
-    -r|--read) #[day] ##MISC
-    ##create new todo file from exist todo
-    shift; create_copy $@;
-    setexec nik_edit ;;
+    ##set filetype for the article (default: .md)
+    : ${2:?-t option needs just one argument}
+    TYPE=".$2"; shiftstack 2 "$@" 
+    ;;
 
     -s|--sln)
-    ##generate symbolic link for the new todo file
-    shift; create_sln $@
-    setexec nik_edit ;;
-
-    -F|--fix-sln) ##MISC
-    ##fix broken symbolic link with $BASE_DIR
-    setexec "fix_sln_basedir $2"; shiftstack 2 $@;;
+    ##generate symbolic link for the newest article and edit it
+    shift; create_sln "$@"
+    setexec nik_edit 
+    ;;
 
     -d|--date) #day|+N|-N
-    ##create or edit todo file with specified date
-    set_date $2; shiftstack 2 $@ ;;
+    ##create or edit article with specified date
+    set_date $2; 
+    shiftstack 2 "$@" 
+    ;;
 
-    -l*|--list) ##BREAK_OPT
-    ##list todo files for default location
-    setexec "nik_pretty_list $@" ;;
-
-    -e|--editor) #editor ##MISC
-    ##temporary change default editor to specified one
-    test -z $2 && throw argumentNotSpecified;
-    EDITOR=$2; shiftstack 2 $@ ;;
+    -l|-la|--list) ##BREAK_OPT
+    ##list articles for default location
+    setexec "nik_pretty_list "$@"" ;;
 
     -D|--directory) #dir
     ##specify document directory below ~/Documents
-    set_dir $2; shiftstack 2 $@ ;;
+    set_dir $2; shiftstack 2 "$@" ;;
 
     -k|--kanban)
     ##kanban mode
-    shift;
-    kanban_edit $@
-    setexec commit_doc $@;;
+    shift; setexec kanban_edit "$@";;
 
     -B|--biz) ##MISC
-    ##create/modify bussiness articles in ~/Documents/Biz/
-    set_dir Biz; shiftstack 1 $@ ;;
+    ##[shortcut] create/modify articles in ~/Documents/Biz/
+    set_dir Biz; shiftstack 1 "$@" ;;
 
     -Q|--qi|--qiita) ##MISC
-    ##create/modify qiita articles in ~/Documents/Qiita
-    set_dir Qiita; shiftstack 1 $@ ;;
+    ##[shortcut] create/modify articles in ~/Documents/Qiita
+    set_dir Qiita; shiftstack 1 "$@" ;;
 
     -n) ##MISC
     ##make document in the current directory
-    DOC_DIR=$PWD; shiftstack 1 $@ ;;
+    DOC_DIR=$PWD; shiftstack 1 "$@" ;;
 
-    -x|--extreme) #[day]
-    ##extreme mode: open all document for specific date
-    test ! -z $2 && FORDATE="$2" && shift;
-    TARGETS="`nik_list --all | xargs -n1 |grep $FORDATE`";
-    setexec "nik_edit ${TARGETS}";;
+    -x|--extreme) #[topic]
+    ##extreme mode: open all document for specific topic (date/attr)
+    TARGETS="$(\
+      nik_list --all \
+      | xargs -n1 \
+      | grep ${2:?-x option needs an topic argument!}\
+    )"
+    [ -z "$TARGETS" ] \
+      && setexec showhelp --all \
+      || setexec "nik_edit ${TARGETS}"
+    ;;
 
     -h|--help) #[--short] ##BREAK_OPT
     ##show this help
@@ -102,7 +95,7 @@ parseopts(){
     setexec show_version;;
 
     *)
-    set_doc_attr $1
+    set_doc_name $1
     setexec "nik_edit ${TARGETS}"
     ;;
   esac
@@ -112,4 +105,4 @@ parseopts(){
 
 }
 
-cook nik $@
+cook nik "$@"
