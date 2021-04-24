@@ -3,8 +3,18 @@
 ##generate symbolic link
 create_sln(){
   set_doc_name "$1"
-  set_doc_newest \
-    && ln -sv \
-      "${DOC_NEWEST}" \
-      $(get_doc)
+  {
+    get_doc_latest 
+    get_doc_name
+  } | {
+    read doc_orig
+    read doc_sln
+    ln -sv \
+      "${doc_orig:?@nik/create_sln: failed to set original article!}" \
+      "${doc_sln:?@nik/create_sln: failed to set the name of symbolic link!}" \
+      || {
+        echo failed to create symbolic link! Simply edit latest file...
+        sleep 1
+      }
+  }
 }

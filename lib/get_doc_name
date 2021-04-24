@@ -1,0 +1,4 @@
+#!/bin/sh
+get_doc_name(){
+  echo "${doc:-$DOC_DIR/${FORDATE}${ATTR}${TYPE}}"
+}

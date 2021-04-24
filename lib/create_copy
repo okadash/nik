@@ -1,9 +1,0 @@
-#!/bin/sh
-
-create_copy(){
-  set_doc "$1"
-  set_newest_doc \
-    && cp -v \
-      "$(get_doc_newest)" \
-      "$(get_doc)"
-}

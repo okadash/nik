@@ -34,21 +34,15 @@ parseopts(){
   case $1 in
     -t|--type) #filetype
     ##set filetype for the article (default: .md)
-    : ${2:?-t option needs just one argument}
-    TYPE=".$2"; shiftstack 2 "$@" 
-    ;;
+    TYPE=".${2:?-t option needs just one argument}"; shiftstack 2 "$@" ;;
 
     -s|--sln)
     ##generate symbolic link for the newest article and edit it
-    shift; create_sln "$@"
-    setexec nik_edit 
-    ;;
+    create_sln "$2"; setexec nik_edit ;;
 
     -d|--date) #day|+N|-N
     ##create or edit article with specified date
-    set_date $2; 
-    shiftstack 2 "$@" 
-    ;;
+    set_date "$2"; shiftstack 2 "$@" ;;
 
     -l|-la|--list) ##BREAK_OPT
     ##list articles for default location
@@ -78,8 +72,8 @@ parseopts(){
     ##extreme mode: open all document for specific topic (date/attr)
     TARGETS="$(\
       nik_list --all \
-      | xargs -n1 \
-      | grep ${2:?-x option needs an topic argument!}\
+        | xargs -n1 \
+        | grep ${2:?-x option needs an topic argument!}\
     )"
     [ -z "$TARGETS" ] \
       && setexec showhelp --all \
@@ -95,9 +89,7 @@ parseopts(){
     setexec show_version;;
 
     *)
-    set_doc_name $1
-    setexec "nik_edit ${TARGETS}"
-    ;;
+    set_doc_name $1; setexec "nik_edit";;
   esac
 
 }

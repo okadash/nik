@@ -1,69 +1,77 @@
 #!/bin/sh
 nik_list(){
   list_exec(){
-    find $DOC_DIR $DEPTH_OPT \
-      \( $LIST_TARGET \) -and -name "*${ATTR}${TYPE}" $CMD_OPT | \
-      grep -vE "(^\..*|(.swp|~$))" | \
-      grep -E "$GREP_TARGET" | \
-      sort | uniq | $ARRANGING_CMD | tr \\\  \\\t ;
+    find \
+      $DOC_DIR \
+      $DEPTH_OPT \
+      \( $LIST_TARGET \) \
+      -and \
+      -name "*${ATTR}${TYPE}" \
+      $CMD_OPT \
+      | grep -vE "(^\..*|(.swp|~$))" \
+      | grep -E "$GREP_TARGET" \
+      | sort \
+      | uniq \
+      | $ARRANGING_CMD \
+      | tr \\\  \\\t ;
   }
   LIST_TARGET="-type f -or -type l"
   DEPTH_OPT="-maxdepth 1";
   CMD_OPT="-exec basename {} ;"
   GREP_TARGET=".*"
   ARRANGING_CMD="xargs -n5"
-  #LIST_CMD="find $DOC_DIR $DEPTH_OPT -type f -name \"*${ATTR}${TYPE}\" $CMD_OPT"
-  test $# -eq 0 && list_exec && return 0;
+  test $# -eq 0 \
+    && list_exec \
+    && return 0;
+
   nik_list_parseargs(){
     case $1 in
     -l|--list)
-    shift;
-    ;;
-    -la)
-    ATTR=
-    TYPE=
-    shift;
-    ;;
-    -a|--all)
+    shift ;;
+
+    -a|-la|--all)
     #list all todo files within default location
     ATTR=
     TYPE=
-    shift;
+    shift
     ;;
+
     -p|--past)
     #list all past document files under the document location
     DEPTH_OPT=
     CMD_OPT=
     ARRANGING_CMD="cat"
-    shift;
+    shift
     ;;
+
     -d|--digest)
     #list digests for each documents
     LIST_TARGET="-type f"
     CMD_OPT="-exec head -5 --verbose {} ;"
     ARRANGING_CMD="cat"
     list_exec | grep -E -A5 "==>.+" ;
-    shift;
+    shift
     shift $#;
     ;;
+
     -N|--no-arrange)
     #list in one range
-    ARRANGING_CMD="cat"; shift;
-    ;;
+    ARRANGING_CMD="cat"; shift ;;
+
     *) #MISC
     #grep with regex
-    GREP_TARGET="$1"; shift ;
-    ;;
+    GREP_TARGET="$1"; shift ;;
     esac
+
     test $# -ne 0 && nik_list_parseargs $@
   }
   nik_list_parseargs $@
   list_exec;
-  #$LIST_CMD
-  #exec $LIST_CMD
 }
 
 #for raw `nik -l` option
 nik_pretty_list(){
-  nik_list $@ | sort | uniq ;
+  nik_list $@ \
+    | sort \
+    | uniq ;
 }

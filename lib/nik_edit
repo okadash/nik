@@ -2,17 +2,14 @@
 ##edit documents for specific condition
 ##command arguments will not be passed for this function directry
 nik_edit(){
-  test $# -eq 0 \
-    && {
-      ## if no args, edit documents in DOC_DIR
-      NIK_EXEC_CMD="$EDITOR $EDITOR_OPT $(get_doc)";
-      $NIK_EXEC_CMD; } \
-    || {
-      ## with args (e.g. -x, extreme mode), it opens all of document at the specified condition
-      cd $DOC_DIR;
-      NIK_EXEC_CMD="$EDITOR $EDITOR_OPT $@";
-      $NIK_EXEC_CMD;
-    }
-    commit_doc
-
+  target=
+  if [ $# -eq 0 ]; then
+    $EDITOR $EDITOR_OPT "$(get_doc_name)"
+  else
+    ## with args (e.g. -x, extreme mode), it opens all of document at the specified condition
+    cd $DOC_DIR
+    $EDITOR $EDITOR_OPT $@
+  fi
+  commit_doc
+  unset target
 }

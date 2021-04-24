@@ -1,31 +1,19 @@
 #!/bin/sh
-##Date detection
+# validate date and set it
 set_date(){
-test -z $1 && throw argumentNotSpecified $1;
-NOW=$FORDATE
-FORDATE=$1
-
-if test ! -z "`echo "$FORDATE" | grep -E "\-|\+"`" ; then
-  ##incremental description
-  FORDATE="`echo $FORDATE | sed -r s/\./\ \&/g`"
-  #target date
-  TODATE="`expr $NOW $FORDATE`";
-
-  #add 0 to the head for month with ONE digit
-  test $FORMONTH -lt 10 && {
-    TODATE="`echo $TODATE | sed -r s/\^/\&0/g`"
-  }
-  if test `expr $NOW / $TODATE` -gt 12; then
-    throw dateInvalidException;
+  : ${1:?@nik/set_date: argument needed!}
+  if 
+    ! [ "$1" -ge 0 ] && ! [ "$1" -lt 0 ] 
+  then
+    throw argument must be a number
+  elif 
+    [ "$1" -le 101 ] || [ "$1" -gt 1231 ] 
+  then
+    throw argument range must be between 101 to 1231
   else
-    FORDATE=$TODATE;
+    date=$1
+    [ $date -le 930 ] && date=0$date
+    FORDATE=$date
+    unset date
   fi
-elif test $FORDATE -gt 1231; then
-  ## month larger than 12
-  throw dateInvalidException;
-elif test $FORDATE -lt 101; then
-  ## month small than 1
-  throw dateInvalidException;
-else :;
-fi
 }

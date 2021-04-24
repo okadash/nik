@@ -1,0 +1,21 @@
+#!/bin/sh
+get_doc_latest(){
+
+  nik_list --no-arrange \
+    | grep -E "[[:digit:]]{4}[[:alpha:]]" \
+    | sort -n \
+    | grep "$ATTR" \
+    | tail -1 \
+    | {
+	read doc_latest
+	: ${doc_latest:?@nik/get_doc_latest: specified doc attr not found!}
+	doc_latest="$DOC_DIR/$doc_latest"
+        if 
+	  [ -f "$doc_latest" ] || [ -h "$doc_latest" ]
+	then
+          echo "$doc_latest"
+        else
+          throw $doc_latest not found.
+        fi
+    }
+}
